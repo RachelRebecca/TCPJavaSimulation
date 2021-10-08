@@ -20,7 +20,6 @@ public class SimpleServer
 			System.exit(1);
 		}
 
-		// todo: add try-catch to this in case the arg isn't paresable as an int
 		int portNumber = Integer.parseInt(args[0]);
 
 		// create packets
