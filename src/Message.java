@@ -1,0 +1,6 @@
+public enum Message
+{
+    ALL_PACKETS_SENT,
+    READY_FOR_PACKETS,
+    ALL_PACKETS_RECEIVED
+}
