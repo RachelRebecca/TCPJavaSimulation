@@ -1,18 +1,14 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class SimpleServer
 {
+	static Random rnd = new Random();	// use this later for the dropping loop
 
-	static Random rnd = new Random();
-	//static MagicEightBall magicEightBall = new MagicEightBall(rnd);
-	
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args) throws Exception
 	{
 
 		// Hard code in port number if necessary:
@@ -24,36 +20,86 @@ public class SimpleServer
 			System.exit(1);
 		}
 
+		// todo: add try-catch to this in case the arg isn't paresable as an int
 		int portNumber = Integer.parseInt(args[0]);
 
-		try
-				(
-				ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
-				Socket clientSocket1 = serverSocket.accept();
-				Socket clientSocket2 = serverSocket.accept();
-				PrintWriter responseWriter1 = new PrintWriter(clientSocket1.getOutputStream(), true);
-				BufferedReader requestReader1 = new BufferedReader(new InputStreamReader(clientSocket1.getInputStream()));
-				PrintWriter responseWriter2 = new PrintWriter(clientSocket2.getOutputStream(), true);
-				BufferedReader requestReader2 = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
+		// create packets
+		String message = "Hello user! Welcome to this program. I hope you’re doing well today!";
+		Integer messageLength = message.length();
 
-				//if client 1 goes, then client 2 goes, client 2 cannot make progress until client 1 sends something else.
+		// Creating array of packets
+		ArrayList<Packet> packets = new ArrayList<>();
+
+		// Copy character by character into array
+		for (int i = 0; i < messageLength; i++)
+		{
+			packets.add(new Packet(message.charAt(i), i, messageLength));
+		}
+
+		// create all sent packet
+		Packet allSent = new Packet(Message.ALL_SENT);
+
+		try (
+						ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
+						Socket clientSocket = serverSocket.accept();
+						ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+						ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream())
 				)
 		{
-			String usersRequest;
-			while ((usersRequest = requestReader1.readLine()) != null)
+			// wait for initial request
+			Packet clientRequest = (Packet) objectInputStream.readObject();
+
+			if (clientRequest.getMessage() == Message.READY)
 			{
-				System.out.println("\"" + usersRequest + "\" received");
-				//String response = magicEightBall.getNextAnswer();
-				//System.out.println("Responding: \"" + response + "\"");
-				//responseWriter1.println(response);
-				usersRequest = requestReader2.readLine();
-				System.out.println("\"" + usersRequest + "\" received");
-				//response = magicEightBall.getNextAnswer();
-				//System.out.println("Responding: \"" + response + "\"");
-				//responseWriter2.println(response);
+				// send all packets with dropping probability
+				for (Packet packet : packets)
+				{
+					if (rnd.nextInt(100) >= 20)
+					{
+						objectOutputStream.writeObject(packet);
+					}
+				}
+
+				// send confirmation (always sent)
+				objectOutputStream.writeObject(allSent);
+			}
+			else
+			{
+				System.exit(1);
+			}
+
+			while ((clientRequest = (Packet) objectInputStream.readObject()).getMessage() != Message.ALL_RECEIVED)
+			{
+				if (clientRequest.getRequestedPacketsNumbers() != null)
+				{
+					Integer[] packetsToSend = clientRequest.getRequestedPacketsNumbers();
+					for (Integer packetNumber : packetsToSend)
+					{
+						// send those packet numbers with dropping probability
+						if (rnd.nextInt(100) >= 20)
+						{
+							objectOutputStream.writeObject(packets.get(packetNumber));
+						}
+					}
+				}
+				else
+				{
+					// todo: Should this exit instead??? Something will probably have gone wrong
+					// send all packets with dropping probability
+					for (Packet packet : packets)
+					{
+						if (rnd.nextInt(100) >= 20)
+						{
+							objectOutputStream.writeObject(packet);
+						}
+					}
+				}
+
+				// send confirmation (always sent)
+				objectOutputStream.writeObject(allSent);
 			}
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			System.out.println(
 					"Exception caught when trying to listen on port " + portNumber + " or listening for a connection");
