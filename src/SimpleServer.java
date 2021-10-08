@@ -14,7 +14,7 @@ public class SimpleServer
 		// Hard code in port number if necessary:
 		//args = new String[] { "30121" };
 		
-		if (args.length != 1)
+		if (args.length != 1 || !isInteger(args[0]))
 		{
 			System.err.println("Usage: java EchoServer <port number>");
 			System.exit(1);
@@ -106,6 +106,20 @@ public class SimpleServer
 			System.out.println(e.getMessage());
 		}
 
+	}
+
+	private static boolean isInteger(String arg)
+	{
+		boolean isInteger = true;
+		try
+		{
+			Integer.parseInt(arg);
+		}
+		catch (Exception e)
+		{
+			isInteger = false;
+		}
+		return isInteger;
 	}
 
 }
