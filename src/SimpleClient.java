@@ -4,9 +4,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class SimpleClient
 {
+    private static Character[] packetList;
+    private static ArrayList<Integer> missingPacketInts;
     public static void main(String[] args) throws IOException
     {
         
@@ -19,9 +23,11 @@ public class SimpleClient
                 "Usage: java EchoClient <host name> <port number>");
             System.exit(1);
         }
-
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
+
+        missingPacketInts = new ArrayList<>();
+
         try
                 (
                     Socket clientSocket = new Socket(hostName, portNumber);
@@ -35,13 +41,45 @@ public class SimpleClient
                             new InputStreamReader(System.in))
                 )
         {
-            String userInput;
-			String serverResponse;
-            while ((userInput = stdIn.readLine()) != null)
+            boolean messageReceived = false;
+            int totalMessages;
+            String serverResponse = responseReader.readLine(); //if this idles, just initialize this to ""
+			System.out.println("Ready to receive the packages? enter 'y' if yes: ");
+			if (stdIn.readLine().equals("y"))
+			{
+			    while (!messageReceived)
+                {
+                    while (!serverResponse.equals(Message.ALL_SENT.toString()))
+                    {
+                        //serverResponse = responseReader.readLine();
+                        //break down response into three parts
+                        packetList = new Character[serverResponse.length()]; //it's going to ACTUALLY BE TOTAL INT
+                        //update and fill array here at proper index
+                        //remove from missing packet ints if found
+                    }
+                    for (int i = 0; i < packetList.length; i++)
+                    {
+                        if (packetList[i] == null)
+                        {
+                            requestWriter.println(i);
+                            if (!missingPacketInts.contains(i))
+                                missingPacketInts.add(i);
+                        }
+                    }
+                    messageReceived = true;
+                }
+                /*
+			    while ((userInput = stdIn.readLine()) != null)
+			    {
+                    requestWriter.println(userInput); // send request to server
+                    serverResponse = responseReader.readLine();
+                    System.out.println("SERVER RESPONDS: \"" + serverResponse + "\"");
+                }
+                 */
+            }
+			else
             {
-                requestWriter.println(userInput); // send request to server
-				serverResponse = responseReader.readLine();
-                System.out.println("SERVER RESPONDS: \"" + serverResponse + "\"");
+                System.out.println("Okay. Not sending packages now.");
             }
         }
         catch (UnknownHostException e)
