@@ -4,6 +4,7 @@ public class Packet
     private Message message;
     private Integer packetNumber;
     private Integer totalPacketsNumber;
+    private Integer[] requestedPacketsNumbers;
 
     public void packet (Character character, Integer packetNumber, Integer totalPacketsNumber)
     {
@@ -25,6 +26,17 @@ public class Packet
         totalPacketsNumber = null;
     }
 
+    public void packet (Integer[] requestedPacketsNumbers)
+    {
+        // constructor for a missing packets request
+        this.requestedPacketsNumbers = requestedPacketsNumbers;
+
+        character = null;
+        message = null;
+        packetNumber = null;
+        totalPacketsNumber = null;
+    }
+
     public Character getCharacter()
     {
         return character;
@@ -38,5 +50,15 @@ public class Packet
     public Integer getPacketNumber()
     {
         return packetNumber;
+    }
+
+    public Integer getTotalPacketsNumber()
+    {
+        return totalPacketsNumber;
+    }
+
+    public Integer[] getRequestedPacketsNumbers()
+    {
+        return requestedPacketsNumbers;
     }
 }
