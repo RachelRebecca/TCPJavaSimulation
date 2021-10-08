@@ -13,7 +13,7 @@ public class SimpleClient
 		// Hardcode in IP and Port here if required
     	//args = new String[] {"127.0.0.1", "30121"};
     	
-        if (args.length != 2)
+        if (args.length != 2 || !isInteger(args[1]))
         {
             System.err.println(
                 "Usage: java EchoClient <host name> <port number>");
@@ -22,7 +22,6 @@ public class SimpleClient
 
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
-
         try
                 (
                     Socket clientSocket = new Socket(hostName, portNumber);
@@ -55,5 +54,19 @@ public class SimpleClient
                 hostName);
             System.exit(1);
         } 
+    }
+
+    private static boolean isInteger(String arg)
+    {
+        boolean isInteger = true;
+        try
+        {
+          Integer.parseInt(arg);
+        }
+        catch (Exception e)
+        {
+            isInteger = false;
+        }
+        return isInteger;
     }
 }
