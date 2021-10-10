@@ -8,7 +8,7 @@ public class SimpleClient
 {
     private static Character[] packetList;
     private static int firstIndexReceived = -1;
-    private static ArrayList<Integer> missingPacketInts;
+
     public static void main(String[] args) throws IOException
     {
         
@@ -24,8 +24,6 @@ public class SimpleClient
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
 
-        //missingPacketInts = new ArrayList<>();
-
         try
                 (
                     Socket clientSocket = new Socket(hostName, portNumber);
@@ -36,12 +34,10 @@ public class SimpleClient
                 )
         {
             boolean messageReceived = false;
-            int totalMessages;
 
             Packet allReady = new Packet(Message.READY);
             objectOutputStream.writeObject(allReady);
 
-            //get first message
             Packet serverResponse = (Packet) objectInputStream.readObject(); //this is the first message received
             packetList = new Character[serverResponse.getTotalPacketsNumber()];
             if (serverResponse.getPacketNumber() != null)
@@ -50,7 +46,8 @@ public class SimpleClient
             }
 
             System.out.println("Ready to receive the packages? enter 'y' if yes: ");
-            //enter some stuff from user
+            //todo: enter some stuff from user
+
             while (!messageReceived)
             {
                 while (!serverResponse.getMessage().equals(Message.ALL_SENT))
@@ -58,9 +55,7 @@ public class SimpleClient
                     int packetNumber = serverResponse.getPacketNumber();
                     Character character = serverResponse.getCharacter();
                     packetList[packetNumber] = character;
-                    //if (missingPacketInts.contains(packetNumber))
-                    //    missingPacketInts.remove(packetNumber);
-                    //remove from missing packet ints if found
+                    System.out.println("Received packet character " + serverResponse.getCharacter());
                     serverResponse = (Packet) objectInputStream.readObject();
                 }
                 ArrayList<Integer> missingInts = new ArrayList<>();
@@ -77,12 +72,20 @@ public class SimpleClient
                 {
                     intArray[i] = missingInts.get(i);
                 }
-                objectOutputStream.writeObject(intArray);
+                objectOutputStream.writeObject(new Packet(intArray));
 
                 //todo: check if no packet was sent
                 if (missingInts.size() == 0 && firstIndexReceived != 1)
                 {
                     messageReceived = true;
+                }
+                else
+                {
+                    serverResponse = (Packet) objectInputStream.readObject();
+                    //IS THIS WHAT SHOULD GO HERE? OTHERWISE I THINK IT GETS STUCK IN INFINITE FOR LOOP
+                    //SERVER SIDE RAISES EXCEPTION AND THEN RECONNECTS
+                    //NOT SURE IF THIS IS BAD HERE THOUGH
+                    //SEEMS TO GET CLIENT SIDE ALL PACKETS BUT NOT SURE
                 }
             }
 
@@ -96,12 +99,13 @@ public class SimpleClient
         {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
-            System.err.println("Couldn't get I/O for the connection to " +
-                hostName);
+            System.err.println("Couldn't get I/O for the connection to " + hostName);
             System.exit(1);
-        } catch (ClassNotFoundException e)
+        }
+        catch (ClassNotFoundException e)
         {
             e.printStackTrace();
         }
