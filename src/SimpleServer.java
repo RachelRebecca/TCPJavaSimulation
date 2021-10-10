@@ -49,6 +49,11 @@ public class SimpleServer
 			// wait for initial request
 			Packet clientRequest = (Packet) objectInputStream.readObject();
 
+			if (clientRequest.getMessage() == Message.DO_NOT_SEND)
+			{
+				System.exit(0);
+			}
+
 			if (clientRequest.getMessage() == Message.READY)
 			{
 				// send all packets with dropping probability

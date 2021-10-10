@@ -33,6 +33,17 @@ public class SimpleClient
                         new BufferedReader(new InputStreamReader(System.in))
                 )
         {
+
+            System.out.println("Would you like to receive the packets now? Enter 'y' if yes: ");
+            String userInput = stdIn.readLine();
+            if (!userInput.equals("y") && !userInput.equals("Y"))
+            {
+                System.out.println("OK, packets will not be sent now.");
+                objectOutputStream.writeObject(new Packet(Message.DO_NOT_SEND));
+                System.exit(0);
+            }
+            System.out.println("OK, sending packets now.");
+
             boolean messageReceived = false;
 
             Packet allReady = new Packet(Message.READY);
@@ -44,9 +55,6 @@ public class SimpleClient
             {
                 firstIndexReceived = serverResponse.getPacketNumber();
             }
-
-            System.out.println("Ready to receive the packages? enter 'y' if yes: ");
-            //todo: enter some stuff from user
 
             while (!messageReceived)
             {
