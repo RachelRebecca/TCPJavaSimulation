@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -26,61 +23,57 @@ public class SimpleClient
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
 
-        missingPacketInts = new ArrayList<>();
+        //missingPacketInts = new ArrayList<>();
 
         try
                 (
                     Socket clientSocket = new Socket(hostName, portNumber);
-                    PrintWriter requestWriter = // stream to write text requests to server
-                        new PrintWriter(clientSocket.getOutputStream(), true);
-                    BufferedReader responseReader= // stream to read text response from server
-                        new BufferedReader(
-                            new InputStreamReader(clientSocket.getInputStream()));
+                    ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
                     BufferedReader stdIn = // standard input stream to get user's requests
-                        new BufferedReader(
-                            new InputStreamReader(System.in))
+                        new BufferedReader(new InputStreamReader(System.in))
                 )
         {
             boolean messageReceived = false;
             int totalMessages;
-            String serverResponse = responseReader.readLine(); //if this idles, just initialize this to ""
-			System.out.println("Ready to receive the packages? enter 'y' if yes: ");
-			if (stdIn.readLine().equals("y"))
-			{
-			    while (!messageReceived)
-                {
-                    while (!serverResponse.equals(Message.ALL_SENT.toString()))
-                    {
-                        //serverResponse = responseReader.readLine();
-                        //break down response into three parts
-                        packetList = new Character[serverResponse.length()]; //it's going to ACTUALLY BE TOTAL INT
-                        //update and fill array here at proper index
-                        //remove from missing packet ints if found
-                    }
-                    for (int i = 0; i < packetList.length; i++)
-                    {
-                        if (packetList[i] == null)
-                        {
-                            requestWriter.println(i);
-                            if (!missingPacketInts.contains(i))
-                                missingPacketInts.add(i);
-                        }
-                    }
-                    messageReceived = true;
-                }
-                /*
-			    while ((userInput = stdIn.readLine()) != null)
-			    {
-                    requestWriter.println(userInput); // send request to server
-                    serverResponse = responseReader.readLine();
-                    System.out.println("SERVER RESPONDS: \"" + serverResponse + "\"");
-                }
-                 */
-            }
-			else
+
+            Packet allReady = new Packet(Message.READY);
+            objectOutputStream.writeObject(allReady);
+
+            //get first message
+            Packet serverResponse = (Packet) objectInputStream.readObject();//if this idles, just initialize this to ""
+            packetList = new Character[serverResponse.getTotalPacketsNumber()];
+
+            System.out.println("Ready to receive the packages? enter 'y' if yes: ");
+            while (!messageReceived)
             {
-                System.out.println("Okay. Not sending packages now.");
+                while (!serverResponse.equals(Message.ALL_SENT.toString()))
+                {
+                    int packetNumber = serverResponse.getPacketNumber();
+                    Character character = serverResponse.getCharacter();
+                    packetList[packetNumber] = character;
+                    //if (missingPacketInts.contains(packetNumber))
+                    //    missingPacketInts.remove(packetNumber);
+                    //remove from missing packet ints if found
+                    serverResponse = (Packet) objectInputStream.readObject();
+                }
+                for (int i = 0; i < packetList.length; i++)
+                {
+                    if (packetList[i] == null)
+                    {
+                        objectOutputStream.writeInt(i);
+                        //if (!missingPacketInts.contains(i))
+                         //   missingPacketInts.add(i);
+                    }
+                }
+                messageReceived = true;
             }
+
+            for (int i=0; i<packetList.length; i++)
+            {
+               System.out.print(packetList[i]);
+            }
+            System.out.println();
         }
         catch (UnknownHostException e)
         {
@@ -91,7 +84,10 @@ public class SimpleClient
             System.err.println("Couldn't get I/O for the connection to " +
                 hostName);
             System.exit(1);
-        } 
+        } catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private static boolean isInteger(String arg)
