@@ -2,7 +2,6 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class SimpleClient
 {
@@ -17,8 +16,7 @@ public class SimpleClient
     	
         if (args.length != 2 || !isInteger(args[1]))
         {
-            System.err.println(
-                "Usage: java EchoClient <host name> <port number>");
+            System.err.println("Usage: java EchoClient <host name> <port number>");
             System.exit(1);
         }
         String hostName = args[0];
@@ -98,9 +96,9 @@ public class SimpleClient
                 }
             }
 
-            for (int i=0; i<packetList.length; i++)
+            for (Character packetChar : packetList)
             {
-               System.out.print(packetList[i]);
+                System.out.print(packetChar);
             }
             System.out.println();
         }
