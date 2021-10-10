@@ -7,6 +7,7 @@ import java.util.Scanner;
 public class SimpleClient
 {
     private static Character[] packetList;
+    private static int firstIndexReceived = -1;
     private static ArrayList<Integer> missingPacketInts;
     public static void main(String[] args) throws IOException
     {
@@ -41,13 +42,18 @@ public class SimpleClient
             objectOutputStream.writeObject(allReady);
 
             //get first message
-            Packet serverResponse = (Packet) objectInputStream.readObject();//if this idles, just initialize this to ""
+            Packet serverResponse = (Packet) objectInputStream.readObject(); //this is the first message received
             packetList = new Character[serverResponse.getTotalPacketsNumber()];
+            if (serverResponse.getPacketNumber() != null)
+            {
+                firstIndexReceived = serverResponse.getPacketNumber();
+            }
 
             System.out.println("Ready to receive the packages? enter 'y' if yes: ");
+            //enter some stuff from user
             while (!messageReceived)
             {
-                while (!serverResponse.equals(Message.ALL_SENT.toString()))
+                while (!serverResponse.getMessage().equals(Message.ALL_SENT))
                 {
                     int packetNumber = serverResponse.getPacketNumber();
                     Character character = serverResponse.getCharacter();
@@ -57,16 +63,27 @@ public class SimpleClient
                     //remove from missing packet ints if found
                     serverResponse = (Packet) objectInputStream.readObject();
                 }
+                ArrayList<Integer> missingInts = new ArrayList<>();
                 for (int i = 0; i < packetList.length; i++)
                 {
                     if (packetList[i] == null)
                     {
-                        objectOutputStream.writeInt(i);
-                        //if (!missingPacketInts.contains(i))
-                         //   missingPacketInts.add(i);
+                        //objectOutputStream.writeInt(i);
+                        missingInts.add(i);
                     }
                 }
-                messageReceived = true;
+                Integer[] intArray = new Integer[missingInts.size()];
+                for (int i=0; i< missingInts.size(); i++)
+                {
+                    intArray[i] = missingInts.get(i);
+                }
+                objectOutputStream.writeObject(intArray);
+
+                //todo: check if no packet was sent
+                if (missingInts.size() == 0 && firstIndexReceived != 1)
+                {
+                    messageReceived = true;
+                }
             }
 
             for (int i=0; i<packetList.length; i++)

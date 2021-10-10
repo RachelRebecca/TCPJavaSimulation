@@ -15,7 +15,7 @@ public class Packet implements Serializable
         this.packetNumber = packetNumber;
         this.totalPacketsNumber = totalPacketsNumber;
 
-        message = null;
+        message = Message.NULL;
     }
 
     public Packet (Message message)
@@ -39,6 +39,10 @@ public class Packet implements Serializable
         totalPacketsNumber = null;
     }
 
+    public void setTotalPacketsNumber(int total)
+    {
+        totalPacketsNumber = total;
+    }
     public Character getCharacter()
     {
         return character;
