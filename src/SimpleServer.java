@@ -39,11 +39,12 @@ public class SimpleServer
 		Packet allSent = new Packet(Message.ALL_SENT);
 		allSent.setTotalPacketsNumber(messageLength);
 
-		try (
-						ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
-						Socket clientSocket = serverSocket.accept();
-						ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-						ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream())
+		try
+				(
+					ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
+					Socket clientSocket = serverSocket.accept();
+					ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+					ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream())
 				)
 		{
 			// wait for initial request

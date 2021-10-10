@@ -81,7 +81,7 @@ public class SimpleClient
                 objectOutputStream.writeObject(new Packet(intArray));
 
                 //todo: check if no packet was sent
-                if (missingInts.size() == 0 && firstIndexReceived != 1)
+                if (missingInts.size() == 0 && firstIndexReceived != -1)
                 {
                     messageReceived = true;
                     objectOutputStream.writeObject(new Packet(Message.ALL_RECEIVED));
