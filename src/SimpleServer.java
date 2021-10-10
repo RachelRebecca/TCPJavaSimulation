@@ -23,7 +23,7 @@ public class SimpleServer
 		int portNumber = Integer.parseInt(args[0]);
 
 		// create packets
-		String message = "Hello "; // I changed this message
+		String message = "Hello user! Welcome to this program. I hope you’re doing well today!"; // I changed this message
 		Integer messageLength = message.length();
 
 		// Creating array of packets
