@@ -78,12 +78,13 @@ public class SimpleClient
                 if (missingInts.size() == 0 && firstIndexReceived != 1)
                 {
                     messageReceived = true;
+                    objectOutputStream.writeObject(new Packet(Message.ALL_RECEIVED));
                 }
                 else
                 {
                     serverResponse = (Packet) objectInputStream.readObject();
                     //IS THIS WHAT SHOULD GO HERE? OTHERWISE I THINK IT GETS STUCK IN INFINITE FOR LOOP
-                    //SERVER SIDE RAISES EXCEPTION AND THEN RECONNECTS
+                    //SERVER SIDE RAISES EXCEPTION AND THEN RECONNECTS - FIXED WITH ADDING LINE 81
                     //NOT SURE IF THIS IS BAD HERE THOUGH
                     //SEEMS TO GET CLIENT SIDE ALL PACKETS BUT NOT SURE
                 }
