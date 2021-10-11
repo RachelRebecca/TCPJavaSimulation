@@ -61,7 +61,7 @@ public class SimpleClient
                     int packetNumber = serverResponse.getPacketNumber();
                     Character character = serverResponse.getCharacter();
                     packetList[packetNumber] = character;
-                    System.out.println("Received packet character " + serverResponse.getCharacter());
+                    //System.out.println("Received packet character " + serverResponse.getCharacter()); for the purpose of monitoring
                     serverResponse = (Packet) objectInputStream.readObject();
                 }
                 ArrayList<Integer> missingInts = new ArrayList<>();
@@ -69,7 +69,6 @@ public class SimpleClient
                 {
                     if (packetList[i] == null)
                     {
-                        //objectOutputStream.writeInt(i);
                         missingInts.add(i);
                     }
                 }
@@ -80,7 +79,6 @@ public class SimpleClient
                 }
                 objectOutputStream.writeObject(new Packet(intArray));
 
-                //todo: check if no packet was sent
                 if (missingInts.size() == 0 && firstIndexReceived != -1)
                 {
                     messageReceived = true;
@@ -89,10 +87,6 @@ public class SimpleClient
                 else
                 {
                     serverResponse = (Packet) objectInputStream.readObject();
-                    //IS THIS WHAT SHOULD GO HERE? OTHERWISE I THINK IT GETS STUCK IN INFINITE FOR LOOP
-                    //SERVER SIDE RAISES EXCEPTION AND THEN RECONNECTS - FIXED WITH ADDING LINE 81
-                    //NOT SURE IF THIS IS BAD HERE THOUGH
-                    //SEEMS TO GET CLIENT SIDE ALL PACKETS BUT NOT SURE
                 }
             }
 
