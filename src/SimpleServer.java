@@ -55,6 +55,7 @@ public class SimpleServer
 			// wait for initial request
 			Packet clientRequest = (Packet) objectInputStream.readObject();
 
+			// if client says not to send, exit
 			if (clientRequest.getMessage() == Message.DO_NOT_SEND)
 			{
 				System.exit(0);
@@ -72,7 +73,7 @@ public class SimpleServer
 					if (rnd.nextInt(100) >= 20)
 					{
 						objectOutputStream.writeObject(packet);
-						//System.out.println("Sent packet character " + packet.getCharacter()); for the purpose of monitoring
+						//System.out.println("Sent packet character " + packet.getCharacter()) 		// for the purpose of monitoring
 					}
 				}
 
@@ -84,14 +85,18 @@ public class SimpleServer
 			}
 			else
 			{
+				// this means that a message has been received that is neither READY nor DO_NOT_SEND - an error has occured
 				System.exit(1);
 			}
 
+			// continue sending packets until all have been received by client
 			while ((clientRequest = (Packet) objectInputStream.readObject()).getMessage() != Message.ALL_RECEIVED)
 			{
+				// if client requested packet numbers
 				if (clientRequest.getRequestedPacketsNumbers() != null)
 				{
 					Integer[] packetsToSend = clientRequest.getRequestedPacketsNumbers();
+
 					// add all packets to send to array in order to be randomized
 					for (Integer packetNumber : packetsToSend)
 					{
@@ -106,13 +111,13 @@ public class SimpleServer
 						if (rnd.nextInt(100) >= 20)
 						{
 							objectOutputStream.writeObject(packet);
-							//System.out.println("Sent packet character " + packet.getCharacter()); for monitoring purposes
+							//System.out.println("Sent packet character " + packet.getCharacter())		// for monitoring purposes
 						}
 					}
 				}
 				else
 				{
-					// something has gone wrong, so exit
+					// the client did not say that the message was received but did not request any packets - something has gone wrong, so exit
 					System.exit(1);
 				}
 
@@ -123,7 +128,7 @@ public class SimpleServer
 				randomizedPackets.clear();
 			}
 		}
-		catch (Exception e)
+		catch (Exception e)		// generic exception in case of any issues that arise
 		{
 			System.out.println(
 					"Exception caught when trying to listen on port " + portNumber + " or listening for a connection");

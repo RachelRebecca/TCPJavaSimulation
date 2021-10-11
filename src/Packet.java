@@ -19,6 +19,7 @@ public class Packet implements Serializable
         this.totalPacketsNumber = totalPacketsNumber;
 
         message = Message.NULL;
+        requestedPacketsNumbers = null;
     }
 
     public Packet (Message message)
@@ -29,6 +30,7 @@ public class Packet implements Serializable
         character = null;
         packetNumber = null;
         totalPacketsNumber = null;
+        requestedPacketsNumbers = null;
     }
 
     public Packet (Integer[] requestedPacketsNumbers)
@@ -36,8 +38,9 @@ public class Packet implements Serializable
         // constructor for a missing packets request
         this.requestedPacketsNumbers = requestedPacketsNumbers;
 
+        message = Message.NULL;
+
         character = null;
-        message = null;
         packetNumber = null;
         totalPacketsNumber = null;
     }
@@ -46,6 +49,7 @@ public class Packet implements Serializable
     {
         totalPacketsNumber = total;
     }
+
     public Character getCharacter()
     {
         return character;

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class SimpleClient
 {
     private static Character[] packetList;
-    private static int firstIndexReceived = -1;
+    private static int firstIndexReceived = -1; // used to handle a case in which all packets are dropped
 
     public static void main(String[] args) throws IOException
     {
@@ -34,24 +34,32 @@ public class SimpleClient
                         new BufferedReader(new InputStreamReader(System.in))
                 )
         {
-
+            // get user prompt
             System.out.println("Would you like to receive the packets now? Enter 'y' if yes: ");
             String userInput = stdIn.readLine();
+
+            // if don't want packets, send DO_NOT_SEND packet
             if (!userInput.equals("y") && !userInput.equals("Y"))
             {
                 System.out.println("OK, packets will not be sent now.");
                 objectOutputStream.writeObject(new Packet(Message.DO_NOT_SEND));
                 System.exit(0);
             }
+
+            // otherwise:
             System.out.println("OK, sending packets now.");
 
+            // boolean to keep track of whether the client has all the packets
             boolean messageReceived = false;
 
+            // send READY packet
             Packet allReady = new Packet(Message.READY);
             objectOutputStream.writeObject(allReady);
 
             Packet serverResponse = (Packet) objectInputStream.readObject(); //this is the first message received
-            packetList = new Character[serverResponse.getTotalPacketsNumber()];
+            packetList = new Character[serverResponse.getTotalPacketsNumber()]; // create empty array to hold anticipated number of characters
+
+            // allows us to confirm that at least one packet has been received
             if (serverResponse.getPacketNumber() != null)
             {
                 firstIndexReceived = serverResponse.getPacketNumber();
@@ -59,14 +67,17 @@ public class SimpleClient
 
             while (!messageReceived)
             {
+                // while server is still sending characters:
                 while (!serverResponse.getMessage().equals(Message.ALL_SENT))
                 {
                     int packetNumber = serverResponse.getPacketNumber();
                     Character character = serverResponse.getCharacter();
                     packetList[packetNumber] = character;
                     //System.out.println("Received packet character " + serverResponse.getCharacter()); for the purpose of monitoring
-                    serverResponse = (Packet) objectInputStream.readObject();
+                    serverResponse = (Packet) objectInputStream.readObject();   // wait for a new packet to arrive
                 }
+
+                // once ALL_SENT has been received, check to see which indices are still null
                 ArrayList<Integer> missingInts = new ArrayList<>();
                 for (int i = 0; i < packetList.length; i++)
                 {
@@ -80,8 +91,11 @@ public class SimpleClient
                 {
                     intArray[i] = missingInts.get(i);
                 }
+
+                // send request for server to send missing packets
                 objectOutputStream.writeObject(new Packet(intArray));
 
+                // not missing any packets AND it's not because we never got any packets (and thus we don't know how many to expect)
                 if (missingInts.size() == 0 && firstIndexReceived != -1)
                 {
                     messageReceived = true;
@@ -89,10 +103,12 @@ public class SimpleClient
                 }
                 else
                 {
+                    // wait for another packet
                     serverResponse = (Packet) objectInputStream.readObject();
                 }
             }
 
+            // print message to user
             for (Character packetChar : packetList)
             {
                 System.out.print(packetChar);
