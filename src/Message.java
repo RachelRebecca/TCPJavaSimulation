@@ -1,3 +1,6 @@
+/**
+ * @author Chana Rosenbluth and Rachel Nemesure
+ */
 public enum Message
 {
     ALL_SENT,

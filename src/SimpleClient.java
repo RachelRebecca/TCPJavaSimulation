@@ -3,6 +3,9 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+/**
+ * @author Chana Rosenbluth and Rachel Nemesure
+ */
 public class SimpleClient
 {
     private static Character[] packetList;
@@ -112,6 +115,11 @@ public class SimpleClient
         }
     }
 
+    /**
+     * Check if arg is an integer
+     * @param arg (String)
+     * @return boolean if arg is an integer
+     */
     private static boolean isInteger(String arg)
     {
         boolean isInteger = true;

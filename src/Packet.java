@@ -1,5 +1,8 @@
 import java.io.Serializable;
 
+/**
+ * @author Chana Rosenbluth and Rachel Nemesure
+ */
 public class Packet implements Serializable
 {
     private Character character;

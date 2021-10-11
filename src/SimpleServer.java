@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+/**
+ * @author Chana Rosenbluth and Rachel Nemesure
+ */
 public class SimpleServer
 {
 	static Random rnd = new Random();	// use this later for the dropping loop
@@ -129,6 +132,11 @@ public class SimpleServer
 
 	}
 
+	/**
+	 * Check if arg is an integer
+	 * @param arg (String)
+	 * @return boolean if arg is an integer
+	 */
 	private static boolean isInteger(String arg)
 	{
 		boolean isInteger = true;
