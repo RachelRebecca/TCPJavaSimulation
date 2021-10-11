@@ -2,6 +2,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class SimpleServer
@@ -26,8 +27,9 @@ public class SimpleServer
 		String message = "Hello user! Welcome to this program. I hope you’re doing well today!"; // I changed this message
 		Integer messageLength = message.length();
 
-		// Creating array of packets
+		// Creating array of packets in order, plus an array to hold randomized ordered packets
 		ArrayList<Packet> packets = new ArrayList<>();
+		ArrayList<Packet> randomizedPackets = new ArrayList<>();
 
 		// Copy character by character into array
 		for (int i = 0; i < messageLength; i++)
@@ -57,8 +59,12 @@ public class SimpleServer
 
 			if (clientRequest.getMessage() == Message.READY)
 			{
+				// randomize packet order
+				randomizedPackets.addAll(packets);
+				Collections.shuffle(randomizedPackets);
+
 				// send all packets with dropping probability
-				for (Packet packet : packets)
+				for (Packet packet : randomizedPackets)
 				{
 					if (rnd.nextInt(100) >= 20)
 					{
@@ -69,6 +75,9 @@ public class SimpleServer
 
 				// send confirmation (always sent)
 				objectOutputStream.writeObject(allSent);
+
+				// empty randomizedPackets
+				randomizedPackets.clear();
 			}
 			else
 			{
@@ -80,13 +89,21 @@ public class SimpleServer
 				if (clientRequest.getRequestedPacketsNumbers() != null)
 				{
 					Integer[] packetsToSend = clientRequest.getRequestedPacketsNumbers();
+					// add all packets to send to array in order to be randomized
 					for (Integer packetNumber : packetsToSend)
+					{
+						randomizedPackets.add(packets.get(packetNumber));
+					}
+
+					Collections.shuffle(randomizedPackets);
+
+					for (Packet packet : randomizedPackets)
 					{
 						// send those packet numbers with dropping probability
 						if (rnd.nextInt(100) >= 20)
 						{
-							objectOutputStream.writeObject(packets.get(packetNumber));
-							System.out.println("Sent packet character " + packets.get(packetNumber).getCharacter());
+							objectOutputStream.writeObject(packet);
+							System.out.println("Sent packet character " + packet.getCharacter());
 						}
 					}
 				}
@@ -105,6 +122,9 @@ public class SimpleServer
 
 				// send confirmation (always sent)
 				objectOutputStream.writeObject(allSent);
+
+				// empty randomizedPackets
+				randomizedPackets.clear();
 			}
 		}
 		catch (Exception e)
