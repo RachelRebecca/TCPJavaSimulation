@@ -73,7 +73,7 @@ public class SimpleServer
 					if (rnd.nextInt(100) >= 20)
 					{
 						objectOutputStream.writeObject(packet);
-						//System.out.println("Sent packet character " + packet.getCharacter()) 		// for the purpose of monitoring
+						System.out.println("Sent packet character " + packet.getCharacter()); // for the purpose of monitoring
 					}
 				}
 
@@ -111,7 +111,7 @@ public class SimpleServer
 						if (rnd.nextInt(100) >= 20)
 						{
 							objectOutputStream.writeObject(packet);
-							//System.out.println("Sent packet character " + packet.getCharacter())		// for monitoring purposes
+							System.out.println("Sent packet character " + packet.getCharacter()); // for monitoring purposes
 						}
 					}
 				}

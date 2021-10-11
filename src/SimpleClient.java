@@ -10,6 +10,7 @@ public class SimpleClient
 {
     private static Character[] packetList;
     private static int firstIndexReceived = -1; // used to handle a case in which all packets are dropped
+    private static int roundNum = 0; // used to count number of rounds until message is sent to completion
 
     public static void main(String[] args) throws IOException
     {
@@ -67,13 +68,15 @@ public class SimpleClient
 
             while (!messageReceived)
             {
+                roundNum++; //increase each round it takes until message is received to completion
+                System.out.println("Round number " + roundNum + ": attempting to receive message from server");
                 // while server is still sending characters:
                 while (!serverResponse.getMessage().equals(Message.ALL_SENT))
                 {
                     int packetNumber = serverResponse.getPacketNumber();
                     Character character = serverResponse.getCharacter();
                     packetList[packetNumber] = character;
-                    //System.out.println("Received packet character " + serverResponse.getCharacter()); for the purpose of monitoring
+                    System.out.println("Received packet character " + serverResponse.getCharacter()); // for the purpose of monitoring
                     serverResponse = (Packet) objectInputStream.readObject();   // wait for a new packet to arrive
                 }
 
@@ -109,6 +112,8 @@ public class SimpleClient
             }
 
             // print message to user
+            System.out.println();
+            System.out.println("The message: ");
             for (Character packetChar : packetList)
             {
                 System.out.print(packetChar);
