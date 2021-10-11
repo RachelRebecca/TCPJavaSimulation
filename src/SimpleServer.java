@@ -85,7 +85,7 @@ public class SimpleServer
 			}
 			else
 			{
-				// this means that a message has been received that is neither READY nor DO_NOT_SEND - an error has occured
+				// this means that a message has been received that is neither READY nor DO_NOT_SEND - an error has occurred
 				System.exit(1);
 			}
 
