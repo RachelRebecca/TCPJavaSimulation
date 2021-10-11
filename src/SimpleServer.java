@@ -109,15 +109,8 @@ public class SimpleServer
 				}
 				else
 				{
-					// todo: Should this exit instead??? Something will probably have gone wrong
-					// send all packets with dropping probability
-					for (Packet packet : packets)
-					{
-						if (rnd.nextInt(100) >= 20)
-						{
-							objectOutputStream.writeObject(packet);
-						}
-					}
+					// something has gone wrong, so exit
+					System.exit(1);
 				}
 
 				// send confirmation (always sent)
