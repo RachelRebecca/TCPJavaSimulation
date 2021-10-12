@@ -73,7 +73,7 @@ public class SimpleClient
             while (!messageReceived)
             {
                 roundNum++; //increase each round it takes until message is received to completion
-                System.out.println("Round number " + roundNum + ": attempting to receive message from server");
+                System.out.println("\nRound number " + roundNum + ": attempting to receive message from server");
                 // while server is still sending characters:
                 while (!serverResponse.getMessage().equals(Message.ALL_SENT))
                 {
