@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 /**
  * @author Chana Rosenbluth and Rachel Nemesure
+ *
+ * Simulates receiving packets from the server
+ * It keeps accepting the packets and arranging them in their proper order
+ * until all packets have been received by client
  */
 public class SimpleClient
 {
