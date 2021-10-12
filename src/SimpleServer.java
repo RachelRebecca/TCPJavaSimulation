@@ -61,11 +61,15 @@ public class SimpleServer
 				System.exit(0);
 			}
 
+			int numberRounds = 1;
+
 			if (clientRequest.getMessage() == Message.READY)
 			{
 				// randomize packet order
 				randomizedPackets.addAll(packets);
 				Collections.shuffle(randomizedPackets);
+
+				System.out.println("Round number " + numberRounds + ":");
 
 				// send all packets with dropping probability
 				for (Packet packet : randomizedPackets)
@@ -93,9 +97,17 @@ public class SimpleServer
 			while ((clientRequest = (Packet) objectInputStream.readObject()).getMessage() != Message.ALL_RECEIVED)
 			{
 				// if client requested packet numbers
-				if (clientRequest.getRequestedPacketsNumbers() != null)
+				if (clientRequest.getRequestedPacketsNumbers().length > 0)
 				{
+					numberRounds++;
+					System.out.println("\nRound number " + numberRounds + ":");
 					Integer[] packetsToSend = clientRequest.getRequestedPacketsNumbers();
+					System.out.print("Received request for packet(s): ");
+					for (Integer packetNumber : packetsToSend)
+					{
+						System.out.print(packetNumber + " ");
+					}
+					System.out.println();
 
 					// add all packets to send to array in order to be randomized
 					for (Integer packetNumber : packetsToSend)
