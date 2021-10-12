@@ -7,6 +7,10 @@ import java.util.Random;
 
 /**
  * @author Chana Rosenbluth and Rachel Nemesure
+ *
+ * Simulates sending packets to the client.
+ * It sends all packets and then continues sending requested (dropped)
+ * packets until the client says that all packets have been received.
  */
 public class SimpleServer
 {
@@ -152,7 +156,7 @@ public class SimpleServer
 	/**
 	 * Check if arg is an integer
 	 * @param arg (String)
-	 * @return boolean if arg is an integer
+	 * @return boolean if arg can be parsed as an integer
 	 */
 	private static boolean isInteger(String arg)
 	{
