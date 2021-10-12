@@ -1,5 +1,7 @@
 /**
  * @author Chana Rosenbluth and Rachel Nemesure
+ *
+ * Enum class with the different types of messages (sent as Packets)
  */
 public enum Message
 {

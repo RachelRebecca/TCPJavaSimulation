@@ -2,6 +2,9 @@ import java.io.Serializable;
 
 /**
  * @author Chana Rosenbluth and Rachel Nemesure
+ *
+ * Class simulating what gets sent between Server and Client
+ * There are three types of Packets: Character Packets, Message Packets, and Integer Array Packets
  */
 public class Packet implements Serializable
 {
@@ -11,6 +14,12 @@ public class Packet implements Serializable
     private Integer totalPacketsNumber;
     private Integer[] requestedPacketsNumbers;
 
+    /**
+     * Character Packets are sent from Server to Client
+     * @param character - one character of the message
+     * @param packetNumber - the index for the character in the message
+     * @param totalPacketsNumber - the total number of message characters
+     */
     public Packet (Character character, Integer packetNumber, Integer totalPacketsNumber)
     {
         // constructor for a character packet
@@ -22,6 +31,10 @@ public class Packet implements Serializable
         requestedPacketsNumbers = null;
     }
 
+    /**
+     * Message Packets are sent between Server and Client
+     * @param message - a Message value to be sent from Server to Client and Client to Server
+     */
     public Packet (Message message)
     {
         // constructor for a message packet
@@ -33,6 +46,10 @@ public class Packet implements Serializable
         requestedPacketsNumbers = null;
     }
 
+    /**
+     * Integer Array Packets are sent from the Client to the Server
+     * @param requestedPacketsNumbers - an array of Integers containing missing indices
+     */
     public Packet (Integer[] requestedPacketsNumbers)
     {
         // constructor for a missing packets request
